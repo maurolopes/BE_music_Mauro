@@ -25,7 +25,7 @@ function listen(userId, musicId) {
   } else if (listened[userId][musicId] === undefined) {
     listened[userId][musicId] = 1; //user listened to this song for the first time
   } else {
-    listened[userId][musicId] += 1; //user listened to this song again
+    listened[userId][musicId]++; //user listened to this song again
   }
   console.log(listened);
 }

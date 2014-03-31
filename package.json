@@ -7,7 +7,8 @@
   },
   "scripts": {
     "start": "node src/app.js",
-    "lint": "./node_modules/.bin/jslint --indent=2 --stupid test/*.js src/*.js",
+    "lint": "./node_modules/.bin/jslint --plusplus --indent=2 --stupid test/*.js src/*.js",
+    "client": "node src/client.js",
     "test": "./node_modules/.bin/mocha test/test.js"
   },
   "repository": {
