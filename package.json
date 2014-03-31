@@ -2,13 +2,13 @@
   "name": "BE_music_Mauro",
   "version": "0.0.0",
   "description": "Music recommendation system",
-  "main": "index.js",
   "directories": {
-    "start": "node src/app.js",
     "test": "test"
   },
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha test/test.js"
+    "start": "node src/app.js",
+    "lint": "./node_modules/.bin/jslint --indent=2 --stupid test/*.js src/*.js",
+    "test": "./node_modules/.bin/mocha test/test.js"
   },
   "repository": {
     "type": "git",
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/maurolopes/BE_music_Mauro",
   "devDependencies": {
+    "jslint": "^0.3.1",
     "mocha": "^1.18.2"
   },
   "dependencies": {
