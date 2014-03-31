@@ -24,7 +24,7 @@ app.post('/listen', function (req, res) {
 
 app.get('/recommendations', function (req, res) {
   var userID = req.query.user,
-    list = recommendationSystem.getRecommendations(userID),
+    list = recommendationSystem.calculateRecommendations(userID, 5),
     response = {list: list};
   res.send(response);
 });

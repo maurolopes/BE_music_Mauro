@@ -10,31 +10,31 @@ function loadMusicDatabase(path) {
 }
 var musicDatabase = loadMusicDatabase('./json/musics.json');
 
-function follow(fromID, toID) {
-  if (followees[fromID] === undefined) {
-    followees[fromID] = {};
+function follow(fromId, toId) {
+  if (followees[fromId] === undefined) {
+    followees[fromId] = {};
   }
-  followees[fromID][toID] = true;
+  followees[fromId][toId] = true;
   console.log(followees);
 }
 
-function listen(userID, musicID) {
-  if (listened[userID] === undefined) { //new user
-    listened[userID] = {};
-    listened[userID][musicID] = 1;
-  } else if (listened[userID][musicID] === undefined) {
-    listened[userID][musicID] = 1; //user listened to this song for the first time
+function listen(userId, musicId) {
+  if (listened[userId] === undefined) { //new user
+    listened[userId] = {};
+    listened[userId][musicId] = 1;
+  } else if (listened[userId][musicId] === undefined) {
+    listened[userId][musicId] = 1; //user listened to this song for the first time
   } else {
-    listened[userID][musicID] += 1; //user listened to this song again
+    listened[userId][musicId] += 1; //user listened to this song again
   }
   console.log(listened);
 }
 
-function getRecommendations(userID) {
-  userID = userID + 1;///////////
-  return JSON.stringify({followees: followees, listened: listened});
+function calculateRecommendations(userId, recommendationCount) {
+  userId = userId + recommendationCount;///////////
+  return ["aaa", "bbb", "ccc", "ddd", "eee"];
 }
 
 exports.follow = follow;
 exports.listen = listen;
-exports.getRecommendations = getRecommendations;
+exports.calculateRecommendations = calculateRecommendations;
