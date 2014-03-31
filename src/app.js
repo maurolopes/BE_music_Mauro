@@ -4,6 +4,10 @@ var recommendationSystem = require('./recommendationSystem.js');
 var express = require('express');
 var app = express();
 
+app.configure(function () {
+  app.use(express.bodyParser());
+});
+
 app.post('/follow', function (req, res) {
   var fromID = req.body.from,
     toID = req.body.to;
