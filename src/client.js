@@ -25,10 +25,11 @@ function makePostRequest(path, data) {
 }
 
 function loadFollowsDatabase(path, next) {
-  var follows = JSON.parse(fs.readFileSync(path)).operations,
-    i,
-    followObj,
-    data;
+  var follows = JSON.parse(fs.readFileSync(path)).operations;
+  var i;
+  var followObj;
+  var data;
+
   for (i = 0; i < follows.length; i++) {
     followObj = follows[i];
     data = {from: followObj[0], to: followObj[1]};
@@ -38,11 +39,11 @@ function loadFollowsDatabase(path, next) {
 }
 
 function loadListenDatabase(path, next) {
-  var listen = JSON.parse(fs.readFileSync(path)).userIds,
-    userId,
-    musicList,
-    i,
-    data;
+  var listen = JSON.parse(fs.readFileSync(path)).userIds;
+  var userId;
+  var musicList;
+  var i;
+  var data;
 
   for (userId in listen) {
     if (listen.hasOwnProperty(userId)) {
