@@ -9,24 +9,39 @@ app.configure(function () {
 });
 
 app.post('/follow', function (req, res) {
-  var fromID = req.body.from,
-    toID = req.body.to;
-  recommendationSystem.follow(fromID, toID);
-  res.send(200); //OK
+  var fromId = req.body.from;
+  var toId = req.body.to;
+
+  if (fromId === undefined || toId === undefined) {
+    res.send(400); //Bad request
+  } else {
+    recommendationSystem.follow(fromId, toId);
+    res.send(200); //OK
+  }
 });
 
 app.post('/listen', function (req, res) {
-  var userID = req.body.user,
-    musicID = req.body.music;
-  recommendationSystem.listen(userID, musicID);
-  res.send(200); //OK
+  var userId = req.body.user;
+  var musicId = req.body.music;
+
+  if (userId === undefined || musicId === undefined) {
+    res.send(400); //Bad request
+  } else {
+    recommendationSystem.listen(userId, musicId);
+    res.send(200); //OK
+  }
 });
 
 app.get('/recommendations', function (req, res) {
-  var userID = req.query.user,
-    list = recommendationSystem.calculateRecommendations(userID, 5),
-    response = {list: list};
-  res.send(response);
+  var userId = req.query.user;
+
+  if (userId === undefined) {
+    res.send(400); //Bad request
+  } else {
+    var list = recommendationSystem.calculateRecommendations(userId, 5);
+    var response = {list: list};
+    res.send(response);
+  }
 });
 
 var server = app.listen(3000, function () {
