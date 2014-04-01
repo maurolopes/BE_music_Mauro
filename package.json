@@ -31,6 +31,7 @@
     "supertest": "^0.10.0"
   },
   "dependencies": {
-    "express": "^3.5.1"
+    "express": "^3.5.1",
+    "async": "^0.6.2"
   }
 }

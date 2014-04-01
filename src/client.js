@@ -2,6 +2,7 @@
 
 var http = require('http');
 var fs = require('fs');
+var async = require('async');
 
 var portNumber = 3000;
 
@@ -24,39 +25,36 @@ function makePostRequest(path, data) {
   req.end();
 }
 
-function loadFollowsDatabase(path, next) {
+function loadFollowsDatabase(path, callback) {
   fs.readFile(path, function (err, fileContents) {
     if (err) { throw err; }
 
     var follows = JSON.parse(fileContents).operations;
 
-    follows.forEach(function (followObj) {
-      var data = {from: followObj[0], to: followObj[1]};
-      makePostRequest('/follow', data);
-    });
-    next();
+    async.each(follows,
+               function (followObj, next) {
+                 var data = {from: followObj[0], to: followObj[1]};
+                 makePostRequest('/follow', data);
+                 next();
+               }, callback);
   });
 }
 
-//TODO make this async
-function loadListenDatabase(path, next) {
+function loadListenDatabase(path, callback) {
   fs.readFile(path, function (err, fileContents) {
     if (err) { throw err; }
 
     var listen = JSON.parse(fileContents).userIds;
-    var userId;
-    var musicList;
 
-    for (userId in listen) {
-      if (listen.hasOwnProperty(userId)) {
-        musicList = listen[userId];
-        musicList.forEach(function (music) {
-          var data = {user: userId, music: music};
-          makePostRequest('/listen', data);
-        });
-      }
-    }
-    next();
+    async.each(Object.keys(listen),
+               function (userId, next) {
+                 var musicList = listen[userId];
+                 musicList.forEach(function (music) {
+                   var data = {user: userId, music: music};
+                   makePostRequest('/listen', data);
+                 });
+                 next();
+               }, callback);
   });
 }
 
