@@ -1,28 +1,26 @@
 "use strict";
 
 var http = require('http');
+var request = require('request');
 var fs = require('fs');
 var async = require('async');
 
 var portNumber = 3000;
 
-function makePostRequest(path, data) {
+function makePostRequest(path, data, callback) {
   var dataString = JSON.stringify(data);
-  var headers = {
-    'Content-Type': 'application/json',
-    'Content-Length': dataString.length
-  };
-  var options = {
-    host: 'localhost',
-    port: portNumber,
-    path: path,
-    method: 'POST',
-    headers: headers
-  };
-  var req = http.request(options);
 
-  req.write(dataString);
-  req.end();
+  var options = {
+    method: 'POST',
+    url: 'http://localhost:' + portNumber + path,
+    body: dataString,
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': dataString.length
+    }
+  };
+
+  request(options, callback);
 }
 
 function loadFollowsDatabase(path, callback) {
@@ -34,8 +32,12 @@ function loadFollowsDatabase(path, callback) {
     async.each(follows,
                function (followObj, next) {
                  var data = {from: followObj[0], to: followObj[1]};
-                 makePostRequest('/follow', data);
-                 next();
+                 makePostRequest('/follow', data,
+                                 function (err, response, body) {
+                                   if (!err && response.statusCode == 200) {
+                                     next();
+                                   }
+                                 });
                }, callback);
   });
 }
@@ -49,11 +51,15 @@ function loadListenDatabase(path, callback) {
     async.each(Object.keys(listen),
                function (userId, next) {
                  var musicList = listen[userId];
-                 musicList.forEach(function (music) {
+                 async.each(musicList, function (music, next2) {
                    var data = {user: userId, music: music};
-                   makePostRequest('/listen', data);
-                 });
-                 next();
+                   makePostRequest('/listen', data,
+                                  function (err, response, body) {
+                                   if (!err && response.statusCode == 200) {
+                                     next2();
+                                   }
+                                  });
+                 }, next);
                }, callback);
   });
 }
