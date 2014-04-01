@@ -69,13 +69,12 @@ function getRecommendations(userId, next) {
   http.get(requestString, next);
 }
 
+var userId = 'a';
+
 loadFollowsDatabase('./json/follows.json', function () {
   loadListenDatabase('./json/listen.json', function () {
-    getRecommendations('a', function (res) {
-      res.on('data', function (chunk) {
-        var recommendations = JSON.parse(chunk);
-        console.log(JSON.stringify(recommendations, null, ' '));
-      });
+    request.get('http://localhost:' + portNumber + '/recommendations?user=' + userId, function (err, response, body) {
+      console.log(body);
     });
   });
 });
