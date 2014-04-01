@@ -11,7 +11,7 @@ function makePostRequest(path, data) {
     'Content-Type': 'application/json',
     'Content-Length': dataString.length
   };
-  options = {
+  var options = {
     host: 'localhost',
     port: portNumber,
     path: path,
@@ -26,7 +26,7 @@ function makePostRequest(path, data) {
 
 function loadFollowsDatabase(path, next) {
   fs.readFile(path, function (err, fileContents) {
-    if (err) throw err;
+    if (err) { throw err; }
 
     var follows = JSON.parse(fileContents).operations;
 
@@ -38,9 +38,10 @@ function loadFollowsDatabase(path, next) {
   });
 }
 
+//TODO make this async
 function loadListenDatabase(path, next) {
   fs.readFile(path, function (err, fileContents) {
-    if (err) throw err;
+    if (err) { throw err; }
 
     var listen = JSON.parse(fileContents).userIds;
     var userId;
