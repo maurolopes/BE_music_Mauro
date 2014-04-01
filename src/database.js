@@ -15,14 +15,14 @@ function follow(fromId, toId) {
     followees[fromId] = {};
   }
   followees[fromId][toId] = true;
-  if(followees[toId] === undefined) {
+  if (followees[toId] === undefined) {
     followees[toId] = {};
   }
 
-  if(listened[fromId] === undefined) {
+  if (listened[fromId] === undefined) {
     listened[fromId] = {};
   }
-  if(listened[toId] === undefined) {
+  if (listened[toId] === undefined) {
     listened[toId] = {};
   }
 }

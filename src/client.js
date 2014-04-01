@@ -34,7 +34,7 @@ function loadFollowsDatabase(path, callback) {
                  var data = {from: followObj[0], to: followObj[1]};
                  makePostRequest('/follow', data,
                                  function (err, response, body) {
-                                   if (!err && response.statusCode == 200) {
+                                   if (!err && response.statusCode === 200) {
                                      next();
                                    }
                                  });
@@ -55,7 +55,7 @@ function loadListenDatabase(path, callback) {
                    var data = {user: userId, music: music};
                    makePostRequest('/listen', data,
                                   function (err, response, body) {
-                                   if (!err && response.statusCode == 200) {
+                                   if (!err && response.statusCode === 200) {
                                      next2();
                                    }
                                   });

@@ -24,7 +24,9 @@ function calculateRecommendations(userId, recommendationCount) {
   var recommendationList = keysSortedByValue(proximitiesCombined).reverse();
 
   //remove songs the user knows
-  var removeKnownSongs = recommendationList.filter(function (musicId) {return knownSongs[musicId] === undefined;});
+  var removeKnownSongs = recommendationList.filter(function (musicId) {
+    return knownSongs[musicId] === undefined;
+  });
 
   //limit results to given number
   var topRecommendations = removeKnownSongs.slice(0, recommendationCount);
