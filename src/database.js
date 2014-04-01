@@ -1,3 +1,5 @@
+"use strict";
+
 var fs = require('fs');
 
 var followees = {};
@@ -12,9 +14,13 @@ function follow(fromId, toId) {
     followees[fromId] = {};
   }
   followees[fromId][toId] = true;
+  if(followees[toId] === undefined) {
+    followees[toId] = {};
+  }
 }
 
 function listen(userId, musicId) {
+  console.log('listen ' + userId + '  ' + musicId)
   if (listened[userId] === undefined) { //new user
     listened[userId] = {};
     listened[userId][musicId] = 1;
