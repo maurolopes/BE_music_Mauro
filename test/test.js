@@ -62,7 +62,7 @@ describe('Recommendation system:', function () {
 
     it('should return an object with a list of 5 strings', function (done) {
       supertest(app)
-        .get('/recommendations?user=aaaa')
+        .get('/recommendations?user=missinguser')
         .end(function (err, res) {
           assert.equal(res.statusCode, 200); //OK
           assert.notEqual(res.body, undefined);
