@@ -9,6 +9,7 @@ function loadMusicDatabase(path) {
   return JSON.parse(fs.readFileSync(path, 'utf8'));
 }
 
+//register that a user is following another
 function follow(fromId, toId) {
   if (followees[fromId] === undefined) {
     followees[fromId] = {};
@@ -17,10 +18,17 @@ function follow(fromId, toId) {
   if(followees[toId] === undefined) {
     followees[toId] = {};
   }
+
+  if(listened[fromId] === undefined) {
+    listened[fromId] = {};
+  }
+  if(listened[toId] === undefined) {
+    listened[toId] = {};
+  }
 }
 
+//register that a user listened to a song
 function listen(userId, musicId) {
-  console.log('listen ' + userId + '  ' + musicId)
   if (listened[userId] === undefined) { //new user
     listened[userId] = {};
     listened[userId][musicId] = 1;

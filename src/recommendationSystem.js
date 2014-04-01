@@ -5,34 +5,44 @@ var database = require('./database');
 var musicProximities = calculateProximities(database.musicDatabase);
 
 function calculateRecommendations(userId, recommendationCount) {
-  //get top five proximities, decreasing order
-
-  //var topProximities = keysSortedByValue(musicProximities[userId]).slice(-recommendationCount).reverse();
-
-  if (database.listened[userId] === undefined) {
-    database.listened[userId] = {};
+  var knownSongs = database.listened[userId];
+  if (knownSongs === undefined) {
+    knownSongs = database.listened[userId] = {};
   }
 
-  var prox = calculateProximitiesForList(Object.keys(database.listened[userId]));
+  //get a recommendation score for each song the user has listened to
+  var proximitiesByPlaylist = calculateProximitiesForPlaylist(Object.keys(knownSongs));
 
-//  return keysSortedByValue(prox).slice(-recommendationCount).reverse();
+  //get a recommendation score for songs of the user's followees
+  //maximum distance is 3, so a->b->c->d->e will consider b's, c's and d's songs for a, but not e's
+  var proximitiesByFollowings = calculateProximitiesByFollowings(userId, 3);
 
-  calculateProximitiesByFollowings(userId);
+  //merge the two scores together, with given weights
+  var proximitiesCombined = mergeDictsWithWeight(proximitiesByPlaylist, proximitiesByFollowings, 1, 1.1);
 
-  return bfs(userId, database.followees, 12345);
+  //sort recommendations, best to worst
+  var recommendationList = keysSortedByValue(proximitiesCombined).reverse();
+
+  //remove songs the user knows
+  var removeKnownSongs = recommendationList.filter(function (musicId) {return knownSongs[musicId] === undefined;});
+
+  //limit results to given number
+  var topRecommendations = removeKnownSongs.slice(0, recommendationCount);
+
+  return topRecommendations;
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////
 // Proximity of songs considering tags
 
-function calculateProximitiesForList(musicList) {
+function calculateProximitiesForPlaylist(playlist) {
   var prox = {};
   Object.keys(database.musicDatabase).forEach(function (musicId) {
     prox[musicId] = 0;
   });
-  for (var i = 0; i < musicList.length; i++) {
-    var myMusic = musicList[i];
+  for (var i = 0; i < playlist.length; i++) {
+    var myMusic = playlist[i];
     Object.keys(database.musicDatabase).forEach(function (musicId) {
       if (musicId !== myMusic) {
         prox[musicId] += musicProximities[myMusic][musicId];
@@ -55,16 +65,13 @@ function calculateProximity(song1, song2) {
 //calls calculateProximity for all pairs of songs
 function calculateProximities(musicDatabase) {
   var songs = Object.keys(musicDatabase);
-  var i;
-  var j;
-  var proximity;
   var proximities = {};
-  for(i = 0; i < songs.length; i++) {
+  for(var i = 0; i < songs.length; i++) {
     proximities[songs[i]] = {};
   }
-  for(i = 0; i < songs.length; i++) {
-    for(j = i + 1; j < songs.length; j++) {
-      proximity = calculateProximity(songs[i], songs[j]);
+  for(var i = 0; i < songs.length; i++) {
+    for(var j = i + 1; j < songs.length; j++) {
+      var proximity = calculateProximity(songs[i], songs[j]);
       proximities[songs[i]][songs[j]] = proximity;
       proximities[songs[j]][songs[i]] = proximity;
     }
@@ -85,7 +92,7 @@ function keysSortedByValue(obj) {
 ///////////////////////////////////////////////////////////////////////////////
 // Recommended songs considering user's followees
 
-//Breadth-first search
+//Regular breadth-first search in a graph
 function bfs (start, graph, maxDistance) {
   if (maxDistance === undefined) {
     maxDistance = Infinity;
@@ -103,7 +110,7 @@ function bfs (start, graph, maxDistance) {
       result.push(first);
       visited[first.node] = true;
 
-      Object.keys(graph[first.node]).forEach(function (node) {
+      Object.keys(graph[first.node] || {}).forEach(function (node) {
         queue.push({dist: first.dist + 1, node: node});
       });
     }
@@ -112,26 +119,41 @@ function bfs (start, graph, maxDistance) {
   return result;
 }
 
-function calculateProximitiesByFollowings (userId) {
-  var maxDistance = 3; //limit range of influence
+//calculate score for songs according to followees preferences
+function calculateProximitiesByFollowings (userId, maxDistance) {
+  //find followees's followees and their distances, up to maxDistance
   var followeesDistances = bfs(userId, database.followees, maxDistance);
 
   followeesDistances = followeesDistances.slice(1); //remove first user (self)
 
   var musicScores = {};
 
+  //each song listened by followee F is scored with the sum of 1/dist(F)
   followeesDistances.forEach(function (bfsObj) {
     var followee = bfsObj.node;
-console.log(followee + ' ' + Object.keys(database.listened[followee]))
     Object.keys(database.listened[followee]).forEach(function (song) {
       var currentScore = musicScores[song] || 0; //0 if undefined
       var bonus = 1.0 / bfsObj.dist;
       musicScores[song] = currentScore + bonus;
-      console.log(song + ' ' + followee)
     });
   });
 
-  console.log(musicScores, null, ' ');
+  return musicScores;
+}
+
+//dict1={k: 1}, dict2={k: 2} => merged={k: v}, v=1*weight1 + 2*weight2
+function mergeDictsWithWeight (dict1, dict2, weight1, weight2) {
+  var merged = {};
+
+  Object.keys(dict1).forEach(function (key) {
+    merged[key] = dict1[key] * weight1;
+  });
+
+  Object.keys(dict2).forEach(function (key) {
+    merged[key] = (merged[key] || 0) + dict2[key] * weight2;
+  });
+
+  return merged;
 }
 
 
