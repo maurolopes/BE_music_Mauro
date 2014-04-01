@@ -4,33 +4,49 @@ BE_music_Mauro
 Installation
 ------------
 
+Install node.js and npm if you have not done so yet.
+
 Clone this repo into a local folder:
 
-```cd ~
+```
 git clone git@github.com:maurolopes/BE_music_Mauro.git
 ```
-Install node.js and npm if you have not done so yet.
 
 Enter the project folder and install all dependencies:
 
-```cd ~/BE_music_Mauro
+```
+cd BE_music_Mauro
+
 npm install
 ```
 
 Running the server
 ------------------
 
-```npm start
+```
+npm start
 ```
 
 Running the client script
 -------------------------
 
-```npm run-script src/client.js
+```
+npm run client
 ```
 
-You may want to run unit tests (other than the test client)
+Unit tests
 -----------------------------------------------------------
 
-```npm test
+You may want to run unit tests (other than the test client)
+
+```
+npm test
+```
+
+JSLint
+----
+
+You may want to run JSLint (though I have not followed all of its suggestions)
+```
+npm run lint
 ```
